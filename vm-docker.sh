@@ -5,7 +5,7 @@
 clear
 printf "\n\e[7m 0. Choose which docker container to install: \e[0m \n\n"
 PS3="> "
-options=("initialize-vm" "update-vm" "install-docker" "install-ethereum" "install-plex" "install-tor" "quit")
+options=("initialize-vm" "update-vm" "install-ethereum" "install-plex" "install-tor" "quit")
 select opt in "${options[@]}";
 do
 	case $opt in
