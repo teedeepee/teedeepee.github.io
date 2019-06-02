@@ -98,7 +98,7 @@ do
 				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/config $name-config
 				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/downloads $name-downloads
 			fn-printf "Re-creating the $name docker container"
-				docker create --name=$name --restart unless-stopped -p 6789:6789 -v $name-config:/config -v $name-downloads:/downloads linuxserver/$name
+				docker create --name=$name --restart unless-stopped -e VERSION=docker -p 6789:6789 -v $name-config:/config -v $name-downloads:/downloads linuxserver/$name
 			fn-printf "Starting the $name docker container"
 				docker start $name
 				sleep 5s
@@ -124,7 +124,7 @@ do
 				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/movies $name-movies
 				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/shows $name-shows
 			fn-printf "Re-creating the $name docker container"
-				docker create --name=$name --net=host --restart unless-stopped -v $name-config:/config -v $name-transcode:/transcode -v $name-audio:/audio -v $name-movies:/movies -v $name-shows:/shows linuxserver/$name
+				docker create --name=$name --net=host --restart unless-stopped -e VERSION=docker -v $name-config:/config -v $name-transcode:/transcode -v $name-audio:/audio -v $name-movies:/movies -v $name-shows:/shows linuxserver/$name
 			fn-printf "Starting the $name docker container"
 				docker start $name
 				sleep 5s
@@ -148,7 +148,7 @@ do
 				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/downloads $name-downloads
 				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/movies $name-movies
 			fn-printf "Re-creating the $name docker container"
-				docker create --name=$name --restart unless-stopped -p 7878:7878 -v $name-config:/config -v $name-downloads:/downloads -v $name-movies:/movies linuxserver/$name
+				docker create --name=$name --restart unless-stopped -e VERSION=docker -p 7878:7878 -v $name-config:/config -v $name-downloads:/downloads -v $name-movies:/movies linuxserver/$name
 			fn-printf "Starting the $name docker container"
 				docker start $name
 				sleep 5s
@@ -172,7 +172,7 @@ do
 				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/downloads $name-downloads
 				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/shows $name-shows
 			fn-printf "Re-creating the $name docker container"
-				docker create --name=$name --restart unless-stopped -p 8989:8989 -v $name-config:/config -v $name-downloads:/downloads -v $name-shows:/tv linuxserver/$name
+				docker create --name=$name --restart unless-stopped -e VERSION=docker -p 8989:8989 -v $name-config:/config -v $name-downloads:/downloads -v $name-shows:/tv linuxserver/$name
 			fn-printf "Starting the $name docker container"
 				docker start $name
 				sleep 5s
@@ -218,7 +218,7 @@ do
 				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/downloads $name-downloads
 				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/watch $name-watch
 			fn-printf "Re-creating the $name docker container"
-				docker create --name=$name --restart unless-stopped -e TRANSMISSION_WEB_HOME=/combustion-release/ -p 9091:9091 -p 51413:51413 -p 51413:51413/udp -v $name-config:/config -v $name-downloads:/downloads -v $name-movies:/movies linuxserver/$name
+				docker create --name=$name --restart unless-stopped -e VERSION=docker -e TRANSMISSION_WEB_HOME=/combustion-release/ -p 9091:9091 -p 51413:51413 -p 51413:51413/udp -v $name-config:/config -v $name-downloads:/downloads -v $name-movies:/movies linuxserver/$name
 			fn-printf "Starting the $name docker container"
 				docker start $name
 				sleep 5s
