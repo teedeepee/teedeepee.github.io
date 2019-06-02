@@ -6,7 +6,7 @@
 clear
 printf "\n\e[7m 0. Choose which docker container to install: \e[0m \n\n"
 PS3="> "
-options=("initialize-vm" "update-vm" "install-ethereum" "install-plex" "install-tor" "quit")
+options=("initialize-vm" "update-vm" "install-ethereum" "install-plex" "install-sonarr" "install-tor" "quit")
 select opt in "${options[@]}";
 do
 	case $opt in
@@ -65,6 +65,7 @@ do
 			printf "\n\e[7m Removing any existing Ethereum Docker volume \e[0m \n\n"
 			docker volume rm ethereum
 			printf "\n\e[7m Re-creating the Ethereum Docker volume \e[0m \n\n"
+			#Make sure the remote folder exists on the NAS and is not empty (even if it means creating an empty Temp folder inside it)
 			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/crypto/ethereum/.ethereum ethereum
 			printf "\n\e[7m Re-creating the Ethereum Docker container \e[0m \n\n"
 			docker create --name=ethereum --restart unless-stopped -p 8545:8545 -p 30303:30303 -v ethereum:/root ethereum/client-go
@@ -89,7 +90,8 @@ do
 			docker stop plex || true && docker rm plex || true
 			printf "\n\e[7m Removing any existing Plex Docker volume \e[0m \n\n"
 			docker volume rm config && docker volume rm transcode && docker volume rm audio && docker volume rm shows && docker volume rm movies
-			printf "\n\e[7m Re-creating the Plex Docker volume \e[0m \n\n"
+			printf "\n\e[7m Re-creating the Plex Docker volumes \e[0m \n\n"
+			#Make sure the remote folders exist on the NAS and are not empty (even if it means creating an empty Temp folder inside them)
 			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/config config
 			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/transcode transcode
 			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/audio audio
@@ -107,22 +109,50 @@ do
 			break
 			;;
 			
+		install-sonarr)
+			clear
+			printf "\n\e[7m INSTALLING SONARR \e[0m \n\n"
+			printf "\n\e[7m Updating repositories, upgrading packages, and cleaning up \e[0m \n\n"
+			sudo apt update && sudo apt -y upgrade && sudo apt -y autoremove && sudo apt -y autoclean
+			printf "\n\e[7m Pulling the latest Sonarr docker image \e[0m \n\n"
+			docker pull linuxserver/sonarr:latest
+			printf "\n\e[7m Removing any existing Sonarr docker container \e[0m \n\n"
+			docker stop sonarr || true && docker rm sonarr || true
+			printf "\n\e[7m Removing any existing Sonarr Docker volume \e[0m \n\n"
+			docker volume rm config && docker volume rm downloads && docker volume rm shows
+			printf "\n\e[7m Re-creating the Sonarr Docker volume \e[0m \n\n"
+			#Make sure the remote folder exists on the NAS and is not empty (even if it means creating an empty Temp folder inside it)
+			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/sonarr/config config
+			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/sonarr/downloads downloads
+			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/shows shows
+			printf "\n\e[7m Re-creating the Sonarr docker container \e[0m \n\n"
+			docker create --name=sonarr --restart unless-stopped -v config:/config -v downloads:/downloads -v shows:/tv linuxserver/sonarr
+			printf "\n\e[7m Starting the Sonarr docker container \e[0m \n\n"
+			docker start sonarr
+			sleep 5s
+			printf "\n\e[7m Displaying the log \e[0m \n\n"
+			docker logs sonarr
+			printf "\n\e[7m FINISHED INSTALLING SONARR \e[0m \n\n"
+			break
+			;;
+			
 		install-tor)
 			clear
 			printf "\n\e[7m INSTALLING TOR \e[0m \n\n"
 			printf "\n\e[7m Updating repositories, upgrading packages, and cleaning up \e[0m \n\n"
 			sudo apt update && sudo apt -y upgrade && sudo apt -y autoremove && sudo apt -y autoclean
-			printf "\n\e[7m Pulling the latest tor docker image \e[0m \n\n"
+			printf "\n\e[7m Pulling the latest Tor docker image \e[0m \n\n"
 			docker pull chriswayg/tor-server:latest
 			printf "\n\e[7m Removing any existing Tor docker container \e[0m \n\n"
 			docker stop tor || true && docker rm tor || true
 			printf "\n\e[7m Removing any existing Tor Docker volume \e[0m \n\n"
 			docker volume rm tor
 			printf "\n\e[7m Re-creating the Tor Docker volume \e[0m \n\n"
+			#Make sure the remote folder exists on the NAS and is not empty (even if it means creating an empty Temp folder inside it)
 			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/tor tor
-			printf "\n\e[7m Re-creating the tor docker container \e[0m \n\n"
+			printf "\n\e[7m Re-creating the Tor docker container \e[0m \n\n"
 			docker create --name=tor --restart unless-stopped -e CONTACT_EMAIL=R2XRAp6Mc7Fg33q4LhT6c74u7@anche.no -e TOR_NICKNAME=Tor4 -v tor:/var/lib/tor chriswayg/tor-server
-			printf "\n\e[7m Starting the tor docker container \e[0m \n\n"
+			printf "\n\e[7m Starting the Tor docker container \e[0m \n\n"
 			docker start tor
 			sleep 5s
 			printf "\n\e[7m Displaying the log \e[0m \n\n"
