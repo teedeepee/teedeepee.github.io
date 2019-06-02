@@ -126,7 +126,7 @@ do
 			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/sonarr/downloads downloads
 			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/shows shows
 			printf "\n\e[7m Re-creating the Sonarr docker container \e[0m \n\n"
-			docker create --name=sonarr --restart unless-stopped -v config:/config -v downloads:/downloads -v shows:/tv linuxserver/sonarr
+			docker create --name=sonarr --restart unless-stopped -p 8989:8989 -v config:/config -v downloads:/downloads -v shows:/tv linuxserver/sonarr
 			printf "\n\e[7m Starting the Sonarr docker container \e[0m \n\n"
 			docker start sonarr
 			sleep 5s
