@@ -1,6 +1,7 @@
 #!/bin/bash
 #Install or upgrade docker containers
 #Copy this file as vm-docker.sh onto the virtual machine, then chmod +x vm-docker.sh to make it executable, then ./vm-docker.sh
+#Or type into the command line: bash <(curl -s https://raw.githubusercontent.com/teedeepee/teedeepee.github.io/master/vm-docker.sh)
 
 clear
 printf "\n\e[7m 0. Choose which docker container to install: \e[0m \n\n"
@@ -87,7 +88,7 @@ do
 			printf "\n\e[7m Removing any existing Plex Docker container \e[0m \n\n"
 			docker stop plex || true && docker rm plex || true
 			printf "\n\e[7m Removing any existing Plex Docker volume \e[0m \n\n"
-			docker volume rm plex
+			docker volume rm config && docker volume rm transcode && docker volume rm audio && docker volume rm shows && docker volume rm movies
 			printf "\n\e[7m Re-creating the Plex Docker volume \e[0m \n\n"
 			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/config config
 			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/transcode transcode
