@@ -3,6 +3,11 @@
 #Copy this file as vm-docker.sh onto the virtual machine, then chmod +x vm-docker.sh to make it executable, then ./vm-docker.sh
 #Or type into the command line: bash <(curl -s https://raw.githubusercontent.com/teedeepee/teedeepee.github.io/master/vm-docker.sh)
 
+function fn-update-vm {
+	printf "\n\e[7m Updating repositories, upgrading packages, and cleaning up \e[0m \n\n"
+	sudo apt update && sudo apt -y upgrade && sudo apt -y autoremove && sudo apt -y autoclean
+}
+
 clear
 printf "\n\e[7m 0. Choose which docker container to install: \e[0m \n\n"
 PS3="> "
@@ -47,8 +52,7 @@ do
 		update-vm)
 			clear
 			printf "\n\e[7m UPDATING THE VM \e[0m \n\n"
-			printf "\n\e[7m Updating repositories, upgrading packages, and cleaning up \e[0m \n\n"
-			sudo apt update && sudo apt -y upgrade && sudo apt -y autoremove && sudo apt -y autoclean
+			fn-update-vm
 			printf "\n\e[7m FINISHED UPDATING THE VM \e[0m \n\n"
 			break
 			;;
