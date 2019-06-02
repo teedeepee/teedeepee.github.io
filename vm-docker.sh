@@ -6,7 +6,7 @@
 clear
 printf "\n\e[7m 0. Choose which docker container to install: \e[0m \n\n"
 PS3="> "
-options=("initialize-vm" "update-vm" "install-ethereum" "install-plex" "install-sonarr" "install-tor" "quit")
+options=("initialize-vm" "update-vm" "install-ethereum" "install-nzbget" "install-plex" "install-sonarr" "install-tor" "quit")
 select opt in "${options[@]}";
 do
 	case $opt in
@@ -66,7 +66,7 @@ do
 			docker volume rm ethereum
 			printf "\n\e[7m Re-creating the Ethereum Docker volume \e[0m \n\n"
 			#Make sure the remote folder exists on the NAS and is not empty (even if it means creating an empty Temp folder inside it)
-			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/crypto/ethereum/.ethereum ethereum
+			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/crypto/ethereum/ ethereum
 			printf "\n\e[7m Re-creating the Ethereum Docker container \e[0m \n\n"
 			docker create --name=ethereum --restart unless-stopped -p 8545:8545 -p 30303:30303 -v ethereum:/root ethereum/client-go
 			printf "\n\e[7m Starting the Ethereum Docker container \e[0m \n\n"
@@ -75,6 +75,32 @@ do
 			printf "\n\e[7m Displaying the log \e[0m \n\n"
 			docker logs ethereum
 			printf "\n\e[7m FINISHED INSTALLING ETHEREUM \e[0m \n\n"
+			break
+			;;
+			
+		install-nzbget)
+			clear
+			printf "\n\e[7m INSTALLING NZBGET \e[0m \n\n"
+			printf "\n\e[7m Updating repositories, upgrading packages, and cleaning up \e[0m \n\n"
+			sudo apt update && sudo apt -y upgrade && sudo apt -y autoremove && sudo apt -y autoclean
+			printf "\n\e[7m Pulling the latest Nzbget docker image \e[0m \n\n"
+			docker pull linuxserver/nzbget:latest
+			printf "\n\e[7m Removing any existing Nzbget docker container \e[0m \n\n"
+			docker stop nzbget || true && docker rm nzbget || true
+			printf "\n\e[7m Removing any existing Nzbget Docker volume \e[0m \n\n"
+			docker volume rm nzbget-config && docker volume rm nzbget-downloads
+			printf "\n\e[7m Re-creating the Nzbget Docker volume \e[0m \n\n"
+			#Make sure the remote folder exists on the NAS and is not empty (even if it means creating an empty Temp folder inside it)
+			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/nzbget/config nzbget-config
+			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/nzbget/downloads nzbget-downloads
+			printf "\n\e[7m Re-creating the Nzbget docker container \e[0m \n\n"
+			docker create --name=nzbget --restart unless-stopped -p 6789:6789 -v nzbget-config:/config -v nzbget-downloads:/downloads
+			printf "\n\e[7m Starting the Nzbget docker container \e[0m \n\n"
+			docker start nzbget
+			sleep 5s
+			printf "\n\e[7m Displaying the log \e[0m \n\n"
+			docker logs nzbget
+			printf "\n\e[7m FINISHED INSTALLING NZBGET \e[0m \n\n"
 			break
 			;;
 
@@ -89,16 +115,16 @@ do
 			printf "\n\e[7m Removing any existing Plex Docker container \e[0m \n\n"
 			docker stop plex || true && docker rm plex || true
 			printf "\n\e[7m Removing any existing Plex Docker volume \e[0m \n\n"
-			docker volume rm config && docker volume rm transcode && docker volume rm audio && docker volume rm shows && docker volume rm movies
+			docker volume rm plex-config && docker volume rm plex-transcode && docker volume rm plex-audio && docker volume rm plex-shows && docker volume rm plex-movies
 			printf "\n\e[7m Re-creating the Plex Docker volumes \e[0m \n\n"
 			#Make sure the remote folders exist on the NAS and are not empty (even if it means creating an empty Temp folder inside them)
-			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/config config
-			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/transcode transcode
-			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/audio audio
-			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/shows shows
-			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/movies movies
+			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/plex/config plex-config
+			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/plex/transcode plex-transcode
+			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/audio plex-audio
+			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/shows plex-shows
+			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/movies plex-movies
 			printf "\n\e[7m Re-creating the Plex Docker container \e[0m \n\n"
-			docker create --name=plex --net=host --restart unless-stopped -v config:/config -v transcode:/transcode -v audio:/audio -v shows:/data/shows -v movies:/data/movies linuxserver/plex
+			docker create --name=plex --net=host --restart unless-stopped -v plex-config:/config -v plex-transcode:/transcode -v plex-audio:/audio -v plex-shows:/data/shows -v plex-movies:/data/movies linuxserver/plex
 			printf "\n\e[7m Starting the Plex Docker container \e[0m \n\n"
 			docker start plex
 			sleep 5s
@@ -119,14 +145,14 @@ do
 			printf "\n\e[7m Removing any existing Sonarr docker container \e[0m \n\n"
 			docker stop sonarr || true && docker rm sonarr || true
 			printf "\n\e[7m Removing any existing Sonarr Docker volume \e[0m \n\n"
-			docker volume rm config && docker volume rm downloads && docker volume rm shows
+			docker volume rm sonarr-config && docker volume rm sonarr-downloads && docker volume rm sonarr-shows
 			printf "\n\e[7m Re-creating the Sonarr Docker volume \e[0m \n\n"
 			#Make sure the remote folder exists on the NAS and is not empty (even if it means creating an empty Temp folder inside it)
-			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/sonarr/config config
-			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/sonarr/downloads downloads
-			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/shows shows
+			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/sonarr/config sonarr-config
+			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/sonarr/downloads sonarr-downloads
+			docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/shows sonarr-shows
 			printf "\n\e[7m Re-creating the Sonarr docker container \e[0m \n\n"
-			docker create --name=sonarr --restart unless-stopped -p 8989:8989 -v config:/config -v downloads:/downloads -v shows:/tv linuxserver/sonarr
+			docker create --name=sonarr --restart unless-stopped -p 8989:8989 -v sonarr-config:/config -v sonarr-downloads:/downloads -v sonarr-shows:/tv linuxserver/sonarr
 			printf "\n\e[7m Starting the Sonarr docker container \e[0m \n\n"
 			docker start sonarr
 			sleep 5s
