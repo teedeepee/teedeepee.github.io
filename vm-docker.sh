@@ -143,6 +143,8 @@ do
 				docker pull linuxserver/$name:latest
 			fn-printf "Removing any existing $name docker container"
 				docker stop $name || true && docker rm $name || true
+			fn-printf "Removing any existing $name docker volume"
+				docker volume rm $name-config && docker volume rm $name-downloads && docker volume rm $name-movies
 			fn-printf "Re-creating the $name docker volume" #Make sure the remote folder exists on the NAS and is not empty (even if it means creating an empty Temp folder inside it)
 				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/config $name-config
 				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/downloads $name-downloads
@@ -201,6 +203,30 @@ do
 			fn-printf "Displaying the log"
 			docker logs tor
 			fn-printf "FINISHED INSTALLING TOR"
+			break
+			;;
+	
+		install-transmission)
+			name=transmission
+			fn-update-vm
+			fn-printf "Pulling the latest $name docker image"
+				docker pull linuxserver/$name:latest
+			fn-printf "Removing any existing $name docker container"
+				docker stop $name || true && docker rm $name || true
+			fn-printf "Removing any existing $name docker volume"
+				docker volume rm $name-config && docker volume rm $name-downloads && docker volume rm $name-watch
+			fn-printf "Re-creating the $name docker volume" #Make sure the remote folder exists on the NAS and is not empty (even if it means creating an empty Temp folder inside it)
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/config $name-config
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/downloads $name-downloads
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/watch $name-watch
+			fn-printf "Re-creating the $name docker container"
+				docker create --name=$name --restart unless-stopped -e TRANSMISSION_WEB_HOME=/combustion-release/ -p 9091:9091 -p 51413:51413 -p 51413:51413/udp -v $name-config:/config -v $name-downloads:/downloads -v $name-movies:/movies linuxserver/$name
+			fn-printf "Starting the $name docker container"
+				docker start $name
+				sleep 5s
+			fn-printf "Displaying the log"
+				docker logs $name
+			fn-printf "Finished installing $name"
 			break
 			;;
 
