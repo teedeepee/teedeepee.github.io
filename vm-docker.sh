@@ -20,7 +20,7 @@ fn-echo () {
 clear
 fn-echo "What do you want to do?"
 PS3="> "
-options=("initialize-vm" "update-vm" "install-ethereum" "install-nzbget" "install-plex" "install-sonarr" "install-tor" "quit")
+options=("initialize-vm" "update-vm" "install-ethereum" "install-nzbget" "install-plex" "install-radarr" "install-sonarr" "install-tor" "quit")
 select opt in "${options[@]}";
 do
 	case $opt in
