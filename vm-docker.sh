@@ -73,7 +73,7 @@ do
 			fn-printf "Removing any existing $name docker volume"
 				docker volume rm $name
 			fn-printf "Re-creating the $name docker volume" #Make sure the remote folder exists on the NAS and is not empty (even if it means creating an empty Temp folder inside it)
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/crypto/$name $name
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/crypto/$name $name
 			fn-printf "Re-creating the $name docker container"
 				docker create --name=$name --restart unless-stopped -p 8545:8545 -p 30303:30303 -v $name:/root $name/client-go
 			fn-printf "Starting the $name docker container"
@@ -95,8 +95,8 @@ do
 			fn-printf "Removing any existing $name docker volume"
 				docker volume rm $name-config && docker volume rm $name-downloads
 			fn-printf "Re-creating the $name docker volume" #Make sure the remote folder exists on the NAS and is not empty (even if it means creating an empty Temp folder inside it)
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/config $name-config
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/downloads $name-downloads
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/$name/config $name-config
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/$name/downloads $name-downloads
 			fn-printf "Re-creating the $name docker container"
 				docker create --name=$name --restart unless-stopped -e VERSION=docker -p 6789:6789 -v $name-config:/config -v $name-downloads:/downloads linuxserver/$name
 			fn-printf "Starting the $name docker container"
@@ -118,11 +118,11 @@ do
 			fn-printf "Removing any existing $name docker volume"
 				docker volume rm $name-config && docker volume rm $name-transcode && docker volume rm $name-audio && docker volume rm $name-shows && docker volume rm $name-movies
 			fn-printf "Re-creating the $name docker volume" #Make sure the remote folder exists on the NAS and is not empty (even if it means creating an empty Temp folder inside it)
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/config $name-config
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/transcode $name-transcode
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/audio $name-audio
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/movies $name-movies
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/shows $name-shows
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/$name/config $name-config
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/$name/transcode $name-transcode
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/audio $name-audio
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/video/movies $name-movies
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/video/shows $name-shows
 			fn-printf "Re-creating the $name docker container"
 				docker create --name=$name --net=host --restart unless-stopped -e VERSION=docker -v $name-config:/config -v $name-transcode:/transcode -v $name-audio:/audio -v $name-movies:/movies -v $name-shows:/shows linuxserver/$name
 			fn-printf "Starting the $name docker container"
@@ -144,9 +144,9 @@ do
 			fn-printf "Removing any existing $name docker volume"
 				docker volume rm $name-config && docker volume rm $name-downloads && docker volume rm $name-movies
 			fn-printf "Re-creating the $name docker volume" #Make sure the remote folder exists on the NAS and is not empty (even if it means creating an empty Temp folder inside it)
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/config $name-config
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/downloads $name-downloads
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/movies $name-movies
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/$name/config $name-config
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/$name/downloads $name-downloads
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/video/movies $name-movies
 			fn-printf "Re-creating the $name docker container"
 				docker create --name=$name --restart unless-stopped -e VERSION=docker -p 7878:7878 -v $name-config:/config -v $name-downloads:/downloads -v $name-movies:/movies linuxserver/$name
 			fn-printf "Starting the $name docker container"
@@ -168,9 +168,9 @@ do
 			fn-printf "Removing any existing $name docker volume"
 				docker volume rm $name-config && docker volume rm $name-downloads && docker volume rm $name-shows
 			fn-printf "Re-creating the $name docker volume" #Make sure the remote folder exists on the NAS and is not empty (even if it means creating an empty Temp folder inside it)
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/config $name-config
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/downloads $name-downloads
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/video/shows $name-shows
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/$name/config $name-config
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/$name/downloads $name-downloads
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/video/shows $name-shows
 			fn-printf "Re-creating the $name docker container"
 				docker create --name=$name --restart unless-stopped -e VERSION=docker -p 8989:8989 -v $name-config:/config -v $name-downloads:/downloads -v $name-shows:/tv linuxserver/$name
 			fn-printf "Starting the $name docker container"
@@ -192,7 +192,7 @@ do
 			fn-printf "Removing any existing $name docker volume"
 				docker volume rm $name-config
 			fn-printf "Re-creating the $name docker volume" #Make sure the remote folder exists on the NAS and is not empty (even if it means creating an empty Temp folder inside it)
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/crypto/$name $name
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/crypto/$name $name
 			fn-printf "Re-creating the $name docker container"
 				docker create --name=$name --restart unless-stopped -e CONTACT_EMAIL=R2XRAp6Mc7Fg33q4LhT6c74u7@anche.no -e TOR_NICKNAME=Tor4 -v $name:/var/lib/tor chriswayg/$name
 			fn-printf "Starting the $name docker container"
@@ -214,9 +214,9 @@ do
 			fn-printf "Removing any existing $name docker volume"
 				docker volume rm $name-config && docker volume rm $name-downloads && docker volume rm $name-watch
 			fn-printf "Re-creating the $name docker volume" #Make sure the remote folder exists on the NAS and is not empty (even if it means creating an empty Temp folder inside it)
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/config $name-config
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/downloads $name-downloads
-				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=4 --opt device=:/volume1/media/$name/watch $name-watch
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/$name/config $name-config
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/$name/downloads $name-downloads
+				docker volume create --driver local --opt type=nfs --opt o=addr=synology-1,rw,vers=3 --opt device=:/volume1/media/$name/watch $name-watch
 			fn-printf "Re-creating the $name docker container"
 				docker create --name=$name --restart unless-stopped -e VERSION=docker -e TRANSMISSION_WEB_HOME=/combustion-release/ -p 9091:9091 -p 51413:51413 -p 51413:51413/udp -v $name-config:/config -v $name-downloads:/downloads -v $name-movies:/movies linuxserver/$name
 			fn-printf "Starting the $name docker container"
